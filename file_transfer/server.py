@@ -14,14 +14,21 @@ class FileTransferService(pb2_grpc.FileTransferService):
         self.__save_directory = save_directory
 
     def Upload(self, request_iterator, context):
-        # Extract metadata from request
-        metadata = dict(context.invocation_metadata())
-        print(f"Recieved upload request for file '{metadata['file_name']}', metadata: {metadata}")
+        try:
+            # Extract chunks and info from request
+            file_name, file_chunks = self.__extract_data_from_chunks(request_iterator)
 
+        except Exception as ee:
+            # Return an error response
+            print(f"Failed to extract data from request: {ee}")
+            return pb2.FileUploadResponse(
+                status=pb2.FILE_UPLOAD_ERROR, error=f"Failed to extract data from request: {ee}"
+            )
+        
         try:
             # Save chunks to file path
-            file_path = os.path.join(self.__save_directory, metadata["file_name"])
-            self.__save_chunks_to_file(chunks=request_iterator, file_path=file_path)
+            file_path = os.path.join(self.__save_directory, file_name)
+            self.__save_chunks_to_file(chunks=file_chunks, file_path=file_path)
         
         except Exception as ee:
             # Return an error response
@@ -34,11 +41,24 @@ class FileTransferService(pb2_grpc.FileTransferService):
         print(f"Successfully uploaded file to '{file_path}'")
         return pb2.FileUploadResponse(status=pb2.FILE_UPLOAD_SUCCESS, error=None)
 
+    def __extract_data_from_chunks(self, chunks):
+        # Extract chunks and file name from request data
+        name = None
+        data = []
+
+        for chunk in chunks:
+            if chunk.WhichOneof("chunk") == "info":
+                name = chunk.info.name
+            elif chunk.WhichOneof("chunk") == "data":
+                data.append(chunk.data.buffer)
+
+        return name, data
+
     def __save_chunks_to_file(self, chunks, file_path):
         # Write all chunks to a new file at file_path
         with open(file_path, "wb") as file:
             for chunk in chunks:
-                file.write(chunk.buffer)
+                file.write(chunk)
 
 if __name__ == "__main__":
     

@@ -15,28 +15,19 @@ class FileTransferClient:
         self.__file_directory = file_directory
         self.__service_stub = service_stub
 
-    def upload(self, file_name):
+    def upload(self, file_name, uploaded_by):
         try:
             # Generate chunks for file
-            file_path = os.path.join(self.__file_directory, file_name)
-            file_chunks = self.__generate_file_chunks(file_path)
+            file_chunks = self.__generate_file_chunks(file_name, uploaded_by)
         
         except Exception as ee:
             print(f"Error while generating file chunks: {ee}")
             return
 
         try:
-            # Create metadata for request
-            # Note: not a fan of metadata having no required structure
-            metadata = (
-                ("file_name", file_name),
-            )
-
             # Send file upload request to server
             print(f"Uploading file '{file_name}'...")
-            response = self.__service_stub.Upload(
-                file_chunks, metadata=metadata
-            )
+            response = self.__service_stub.Upload(file_chunks)
         
         except grpc.RpcError as re:
             print(f"Error while making request: {re}")
@@ -44,14 +35,25 @@ class FileTransferClient:
         
         print(f"Successfully uploaded file '{file_name}', response: {response}")
     
-    def __generate_file_chunks(self, file_path):
-        # Return chunks of file as a generator
+    def __generate_file_chunks(self, file_name, uploaded_by):
+        # Add info chunk to generator
+        yield pb2.FileUploadRequest(
+            info=pb2.FileUploadInfo(
+                name=file_name,
+                uploaded_by=uploaded_by
+            )
+        )
+
+        # Add chunks of file in byte format
+        file_path = os.path.join(self.__file_directory, file_name)
+
         with open(file_path, "rb") as file:
             while True:
-                chunk = file.read(self.CHUNK_SIZE)
-                if len(chunk) == 0:
+                file_chunk = file.read(self.CHUNK_SIZE)
+                if len(file_chunk) == 0:
                     return
-                yield pb2.FileUploadChunk(buffer=chunk)
+
+                yield pb2.FileUploadRequest(data=pb2.FileUploadData(buffer=file_chunk))
 
 
 if __name__ == '__main__':
@@ -70,4 +72,4 @@ if __name__ == '__main__':
         client = FileTransferClient(file_directory=file_directory, service_stub=service_stub)
     
         # Upload file
-        client.upload(file_name=file_name)
+        client.upload(file_name=file_name, uploaded_by="me")

@@ -16,7 +16,7 @@ class FileTransferServiceStub(object):
         """
         self.Upload = channel.stream_unary(
                 '/FileTransferService/Upload',
-                request_serializer=file__transfer__pb2.FileUploadChunk.SerializeToString,
+                request_serializer=file__transfer__pb2.FileUploadRequest.SerializeToString,
                 response_deserializer=file__transfer__pb2.FileUploadResponse.FromString,
                 )
 
@@ -35,7 +35,7 @@ def add_FileTransferServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Upload': grpc.stream_unary_rpc_method_handler(
                     servicer.Upload,
-                    request_deserializer=file__transfer__pb2.FileUploadChunk.FromString,
+                    request_deserializer=file__transfer__pb2.FileUploadRequest.FromString,
                     response_serializer=file__transfer__pb2.FileUploadResponse.SerializeToString,
             ),
     }
@@ -60,7 +60,7 @@ class FileTransferService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_unary(request_iterator, target, '/FileTransferService/Upload',
-            file__transfer__pb2.FileUploadChunk.SerializeToString,
+            file__transfer__pb2.FileUploadRequest.SerializeToString,
             file__transfer__pb2.FileUploadResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

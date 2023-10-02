@@ -1,11 +1,23 @@
 syntax = "proto3";
 
 service FileTransferService {
-  rpc Upload(stream FileUploadChunk) returns (FileUploadResponse) {}
+  rpc Upload(stream FileUploadRequest) returns (FileUploadResponse) {}
 }
 
-message FileUploadChunk {
+message FileUploadData {
   bytes buffer = 1;
+}
+
+message FileUploadInfo {
+  string name = 1;
+  string uploaded_by = 2;
+}
+
+message FileUploadRequest {
+  oneof chunk{
+    FileUploadData data = 1;
+    FileUploadInfo info = 2;
+  }
 }
 
 enum FileUploadStatus {
