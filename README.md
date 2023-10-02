@@ -22,18 +22,17 @@ python -m pip install -r requirements.txt
 To generate protos:
 
 ```bash
-cd file_transfer
 python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. file_transfer.proto
 ```
 
 Server side:
 
 ```bash
-python file_transfer/server.py
+python server.py
 ```
 
 Client side:
 
 ```bash
-python file_transfer/client.py
+python client.py
 ```

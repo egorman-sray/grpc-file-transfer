@@ -16,7 +16,7 @@ class FileTransferService(pb2_grpc.FileTransferService):
     def Upload(self, request_iterator, context):
         try:
             # Extract chunks and info from request
-            file_name, file_chunks = self.__extract_data_from_chunks(request_iterator)
+            file_name, uploaded_by, file_chunks = self.__extract_data_from_chunks(request_iterator)
 
         except Exception as ee:
             # Return an error response
@@ -38,21 +38,23 @@ class FileTransferService(pb2_grpc.FileTransferService):
             )
 
         # Return a success response
-        print(f"Successfully uploaded file to '{file_path}'")
+        print(f"Successfully uploaded file to '{file_path}' from user '{uploaded_by}'")
         return pb2.FileUploadResponse(status=pb2.FILE_UPLOAD_SUCCESS, error=None)
 
     def __extract_data_from_chunks(self, chunks):
         # Extract chunks and file name from request data
         name = None
+        by = None
         data = []
 
         for chunk in chunks:
             if chunk.WhichOneof("chunk") == "info":
                 name = chunk.info.name
+                by = chunk.info.uploaded_by
             elif chunk.WhichOneof("chunk") == "data":
                 data.append(chunk.data.buffer)
 
-        return name, data
+        return name, by, data
 
     def __save_chunks_to_file(self, chunks, file_path):
         # Write all chunks to a new file at file_path

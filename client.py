@@ -33,7 +33,7 @@ class FileTransferClient:
             print(f"Error while making request: {re}")
             return
         
-        print(f"Successfully uploaded file '{file_name}', response: {response}")
+        print(f"Successfully uploaded file with name '{file_name}' as user '{uploaded_by}', response: '{response}'")
     
     def __generate_file_chunks(self, file_name, uploaded_by):
         # Add info chunk to generator
