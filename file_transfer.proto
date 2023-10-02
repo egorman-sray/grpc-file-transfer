@@ -24,8 +24,6 @@ enum FileUploadStatus {
   FILE_UPLOAD_UNKNOWN = 0;
   FILE_UPLOAD_SUCCESS = 1;
   FILE_UPLOAD_ERROR = 2;
-  ACCOUNT_STATUS_SUSPENDED = 3;
-  ACCOUNT_STATUS_CLOSED = 4;
 }
 
 message FileUploadResponse {

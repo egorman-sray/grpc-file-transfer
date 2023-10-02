@@ -34,7 +34,8 @@ class FileTransferClient:
             return
 
         print(
-            f"Successfully uploaded file with name '{file_name}' as user '{uploaded_by}', response: '{response}'"
+            f"Successfully uploaded file with name '{file_name}' as user '{uploaded_by}', "
+            f"response: '{str(response).rstrip()}'"
         )
 
     def __generate_file_chunks(
