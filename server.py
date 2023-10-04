@@ -1,4 +1,5 @@
 from concurrent import futures
+import hashlib
 import os
 import tempfile
 from typing import List, Tuple
@@ -16,7 +17,7 @@ class FileTransferService(pb2_grpc.FileTransferService):
     def Upload(self, request_iterator: List[pb2.FileUploadRequest], context: grpc.RpcContext) -> pb2.FileUploadResponse:
         try:
             # Extract chunks and info from request
-            file_name, uploaded_by, file_chunks = self.__extract_data_from_chunks(
+            file_name, uploaded_by, file_checksum, file_chunks = self.__extract_data_from_chunks(
                 request_iterator
             )
 
@@ -31,10 +32,21 @@ class FileTransferService(pb2_grpc.FileTransferService):
         try:
             # Save chunks to file path
             file_path = os.path.join(self.__save_directory, file_name)
-            self.__save_chunks_to_file(chunks=file_chunks, file_path=file_path)
+            calculated_checksum = self.__save_chunks_to_file(
+                chunks=file_chunks, file_path=file_path
+            )
 
         except Exception as ee:
             # Return an error response
+            print(f"Failed to upload file to '{file_path}': {ee}")
+            return pb2.FileUploadResponse(
+                status=pb2.FILE_UPLOAD_ERROR, error=f"Failed to upload file: {ee}"
+            )
+
+        # Check that reported checksum matches calculated checksum
+        if file_checksum != calculated_checksum:
+            # Return an error response
+            ee = "Reported checksum did not match calculated checksum"
             print(f"Failed to upload file to '{file_path}': {ee}")
             return pb2.FileUploadResponse(
                 status=pb2.FILE_UPLOAD_ERROR, error=f"Failed to upload file: {ee}"
@@ -44,26 +56,34 @@ class FileTransferService(pb2_grpc.FileTransferService):
         print(f"Successfully uploaded file to '{file_path}' from user '{uploaded_by}'")
         return pb2.FileUploadResponse(status=pb2.FILE_UPLOAD_SUCCESS, error=None)
 
-    def __extract_data_from_chunks(self, chunks: List[pb2.FileUploadRequest]) -> Tuple[str, str, list]:
+    def __extract_data_from_chunks(self, chunks: List[pb2.FileUploadRequest]) -> Tuple[str, str, str, list]:
         # Extract chunks and file name from request data
         name = None
         by = None
+        checksum = None
         data = []
 
         for chunk in chunks:
             if chunk.WhichOneof("chunk") == "info":
                 name = chunk.info.name
                 by = chunk.info.uploaded_by
+                checksum = chunk.info.checksum
             elif chunk.WhichOneof("chunk") == "data":
                 data.append(chunk.data.buffer)
 
-        return name, by, data
+        return name, by, checksum, data
 
-    def __save_chunks_to_file(self, chunks, file_path):
+    def __save_chunks_to_file(self, chunks: List[bytes], file_path: str) -> str:
+        # Calculate checksum
+        checksum = hashlib.md5()
+
         # Write all chunks to a new file at file_path
         with open(file_path, "wb") as file:
             for chunk in chunks:
                 file.write(chunk)
+                checksum.update(chunk)
+        
+        return checksum.hexdigest()
 
 
 if __name__ == "__main__":

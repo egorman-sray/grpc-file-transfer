@@ -1,3 +1,4 @@
+import hashlib
 import os
 import tempfile
 from typing import List
@@ -33,6 +34,11 @@ class FileTransferClient:
             print(f"Error while making request: {re}")
             return
 
+        if response.status == pb2.FILE_UPLOAD_ERROR:
+            # Exit on error response from server
+            print(f"Error response from server: {response.error}")
+            return
+
         print(
             f"Successfully uploaded file with name '{file_name}' as user '{uploaded_by}', "
             f"response: '{str(response).rstrip()}'"
@@ -43,10 +49,8 @@ class FileTransferClient:
         file_name: str,
         uploaded_by: str
     ) -> List[pb2.FileUploadRequest]:
-        # Add info chunk to generator
-        yield pb2.FileUploadRequest(
-            info=pb2.FileUploadInfo(name=file_name, uploaded_by=uploaded_by)
-        )
+        # Calculate checksum of file
+        checksum = hashlib.md5()
 
         # Add chunks of file in byte format
         file_path = os.path.join(self.__file_directory, file_name)
@@ -55,9 +59,19 @@ class FileTransferClient:
             while True:
                 file_chunk = file.read(self.CHUNK_SIZE)
                 if len(file_chunk) == 0:
-                    return
+                    break
 
+                checksum.update(file_chunk)
                 yield pb2.FileUploadRequest(data=pb2.FileUploadData(buffer=file_chunk))
+
+        # Add info chunk to generator
+        yield pb2.FileUploadRequest(
+            info=pb2.FileUploadInfo(
+                name=file_name,
+                uploaded_by=uploaded_by,
+                checksum=checksum.hexdigest()
+            )
+        )
 
 
 if __name__ == "__main__":

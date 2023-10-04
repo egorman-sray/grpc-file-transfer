@@ -11,6 +11,7 @@ message FileUploadData {
 message FileUploadInfo {
   string name = 1;
   string uploaded_by = 2;
+  string checksum = 3;
 }
 
 message FileUploadRequest {
