@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x66ile_transfer.proto\" \n\x0e\x46ileUploadData\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\"E\n\x0e\x46ileUploadInfo\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0buploaded_by\x18\x02 \x01(\t\x12\x10\n\x08\x63hecksum\x18\x03 \x01(\t\"^\n\x11\x46ileUploadRequest\x12\x1f\n\x04\x64\x61ta\x18\x01 \x01(\x0b\x32\x0f.FileUploadDataH\x00\x12\x1f\n\x04info\x18\x02 \x01(\x0b\x32\x0f.FileUploadInfoH\x00\x42\x07\n\x05\x63hunk\"U\n\x12\x46ileUploadResponse\x12!\n\x06status\x18\x01 \x01(\x0e\x32\x11.FileUploadStatus\x12\x12\n\x05\x65rror\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x08\n\x06_error*[\n\x10\x46ileUploadStatus\x12\x17\n\x13\x46ILE_UPLOAD_UNKNOWN\x10\x00\x12\x17\n\x13\x46ILE_UPLOAD_SUCCESS\x10\x01\x12\x15\n\x11\x46ILE_UPLOAD_ERROR\x10\x02\x32L\n\x13\x46ileTransferService\x12\x35\n\x06Upload\x12\x12.FileUploadRequest\x1a\x13.FileUploadResponse\"\x00(\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13\x66ile_transfer.proto\x12\x05hello\"4\n\x0cHelloRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x11\n\tfile_data\x18\x02 \x01(\t\" \n\rHelloResponse\x12\x0f\n\x07message\x18\x01 \x01(\t2=\n\x05Hello\x12\x34\n\x05hello\x12\x13.hello.HelloRequest\x1a\x14.hello.HelloResponse\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -21,16 +21,10 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'file_transfer_pb2', _global
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _globals['_FILEUPLOADSTATUS']._serialized_start=311
-  _globals['_FILEUPLOADSTATUS']._serialized_end=402
-  _globals['_FILEUPLOADDATA']._serialized_start=23
-  _globals['_FILEUPLOADDATA']._serialized_end=55
-  _globals['_FILEUPLOADINFO']._serialized_start=57
-  _globals['_FILEUPLOADINFO']._serialized_end=126
-  _globals['_FILEUPLOADREQUEST']._serialized_start=128
-  _globals['_FILEUPLOADREQUEST']._serialized_end=222
-  _globals['_FILEUPLOADRESPONSE']._serialized_start=224
-  _globals['_FILEUPLOADRESPONSE']._serialized_end=309
-  _globals['_FILETRANSFERSERVICE']._serialized_start=404
-  _globals['_FILETRANSFERSERVICE']._serialized_end=480
+  _globals['_HELLOREQUEST']._serialized_start=30
+  _globals['_HELLOREQUEST']._serialized_end=82
+  _globals['_HELLORESPONSE']._serialized_start=84
+  _globals['_HELLORESPONSE']._serialized_end=116
+  _globals['_HELLO']._serialized_start=118
+  _globals['_HELLO']._serialized_end=179
 # @@protoc_insertion_point(module_scope)

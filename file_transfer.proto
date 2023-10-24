@@ -1,33 +1,16 @@
 syntax = "proto3";
 
-service FileTransferService {
-  rpc Upload(stream FileUploadRequest) returns (FileUploadResponse) {}
+package hello;
+
+service Hello {
+  rpc hello(HelloRequest) returns (HelloResponse) {}
 }
 
-message FileUploadData {
-  bytes buffer = 1;
+message HelloRequest {
+  string file_name = 1;
+  string file_data = 2;
 }
 
-message FileUploadInfo {
-  string name = 1;
-  string uploaded_by = 2;
-  string checksum = 3;
-}
-
-message FileUploadRequest {
-  oneof chunk{
-    FileUploadData data = 1;
-    FileUploadInfo info = 2;
-  }
-}
-
-enum FileUploadStatus {
-  FILE_UPLOAD_UNKNOWN = 0;
-  FILE_UPLOAD_SUCCESS = 1;
-  FILE_UPLOAD_ERROR = 2;
-}
-
-message FileUploadResponse {
-  FileUploadStatus status = 1;
-  optional string error = 2;
+message HelloResponse {
+  string message = 1;
 }

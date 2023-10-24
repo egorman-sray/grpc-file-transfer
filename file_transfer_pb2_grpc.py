@@ -5,7 +5,7 @@ import grpc
 import file_transfer_pb2 as file__transfer__pb2
 
 
-class FileTransferServiceStub(object):
+class HelloStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -14,42 +14,42 @@ class FileTransferServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Upload = channel.stream_unary(
-                '/FileTransferService/Upload',
-                request_serializer=file__transfer__pb2.FileUploadRequest.SerializeToString,
-                response_deserializer=file__transfer__pb2.FileUploadResponse.FromString,
+        self.hello = channel.unary_unary(
+                '/hello.Hello/hello',
+                request_serializer=file__transfer__pb2.HelloRequest.SerializeToString,
+                response_deserializer=file__transfer__pb2.HelloResponse.FromString,
                 )
 
 
-class FileTransferServiceServicer(object):
+class HelloServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def Upload(self, request_iterator, context):
+    def hello(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_FileTransferServiceServicer_to_server(servicer, server):
+def add_HelloServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Upload': grpc.stream_unary_rpc_method_handler(
-                    servicer.Upload,
-                    request_deserializer=file__transfer__pb2.FileUploadRequest.FromString,
-                    response_serializer=file__transfer__pb2.FileUploadResponse.SerializeToString,
+            'hello': grpc.unary_unary_rpc_method_handler(
+                    servicer.hello,
+                    request_deserializer=file__transfer__pb2.HelloRequest.FromString,
+                    response_serializer=file__transfer__pb2.HelloResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'FileTransferService', rpc_method_handlers)
+            'hello.Hello', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class FileTransferService(object):
+class Hello(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def Upload(request_iterator,
+    def hello(request,
             target,
             options=(),
             channel_credentials=None,
@@ -59,8 +59,8 @@ class FileTransferService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/FileTransferService/Upload',
-            file__transfer__pb2.FileUploadRequest.SerializeToString,
-            file__transfer__pb2.FileUploadResponse.FromString,
+        return grpc.experimental.unary_unary(request, target, '/hello.Hello/hello',
+            file__transfer__pb2.HelloRequest.SerializeToString,
+            file__transfer__pb2.HelloResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
